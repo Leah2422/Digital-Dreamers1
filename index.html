@@ -101,6 +101,8 @@
             const profileMenu = document.getElementById('profileMenu');
     
             if (user) {
+                sessionStorage.setItem('user', JSON.stringify(user)); // Save the entire user object or just needed details
+                console.log('User is signed in:', user);
                 // User is signed in; hide "Get started" and show profile icon
                 getStartedButton.style.display = 'none';
                 profileMenu.style.display = 'block';
