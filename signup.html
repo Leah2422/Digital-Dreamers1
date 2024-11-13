@@ -240,6 +240,11 @@
             width: 40px;
         }
     </style>
+    <!--SCRIPT-->
+    
+      <script>
+     
+        </script>
 </head>
 <body>
     <nav class="bg-white border-gray-200 dark:bg-gray-900">
@@ -276,53 +281,117 @@
     <!-- SIGN UP FORM-->
     <div id="sign-up-form" class="mt-5 mx-auto justify-center text-center">
         <div class="container" id="container">
+            <!-- Sign-Up Form -->
             <div class="form-container sign-up-container">
-                <form action="#">
+                <form id="signUpForm" action="#">
                     <h1>Create Account</h1>
-                    <input type="text" placeholder="Name" />
-                    <input type="email" placeholder="Email" />
-                    <input type="password" placeholder="Password" />
-                    <button>Sign Up</button>
+                    <input type="email" id="signUpEmail" placeholder="Email" required />
+                    <input type="password" id="signUpPassword" placeholder="Password" required />
+                    <button type="submit">Sign Up</button>
                 </form>
             </div>
+    
+            <!-- Sign-In Form -->
             <div class="form-container sign-in-container">
-                <form action="#">
-                    <h1>Sign in</h1>
-                    <input type="email" placeholder="Email" />
-                    <input type="password" placeholder="Password" />
-                    <a href="#">Forgot your password?</a>
-                    <button>Sign In</button>
+                <form id="signInForm" action="#">
+                    <h1>Sign In</h1>
+                    <input type="email" id="signInEmail" placeholder="Email" required />
+                    <input type="password" id="signInPassword" placeholder="Password" required />
+                    <button type="submit">Sign In</button>
                 </form>
             </div>
+    
             <div class="overlay-container">
                 <div class="overlay">
                     <div class="overlay-panel overlay-left">
                         <h1>Welcome Back!</h1>
-                        <p>To keep connected with us please login with your personal info</p>
+                        <p>To keep connected with us, please log in with your personal info</p>
                         <button class="ghost" id="signIn">Sign In</button>
                     </div>
                     <div class="overlay-panel overlay-right">
                         <h1>Hello, Friend!</h1>
-                        <p>Enter your personal details and start journey with us</p>
+                        <p>Enter your personal details and start your journey with us</p>
                         <button class="ghost" id="signUp">Sign Up</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    
         <!--SCRiPT-->
-        <script>
-            const signUpButton = document.getElementById('signUp');
-            const signInButton = document.getElementById('signIn');
-            const container = document.getElementById('container');
-            
-            signUpButton.addEventListener('click', () => {
-                container.classList.add("right-panel-active");
+<!-- Firebase Initialization and Authentication Setup -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    
+    // Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyBmGsvpmqrrZptEkOE-GgO4JpFpa5AXKuA",
+        authDomain: "edtech-cfc61.firebaseapp.com",
+        projectId: "edtech-cfc61",
+        storageBucket: "edtech-cfc61.firebasestorage.app",
+        messagingSenderId: "413128910911",
+        appId: "1:413128910911:web:1ead13f37fa53241a2f08a"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app); // Initialize Firebase Authentication instance
+
+    // UI Interactions for showing sign-in and sign-up panels
+    const signUpButton = document.getElementById('signUp');
+    const signInButton = document.getElementById('signIn');
+    const container = document.getElementById('container');
+
+    signUpButton.addEventListener('click', () => {
+        container.classList.add("right-panel-active");
+    });
+
+    signInButton.addEventListener('click', () => {
+        container.classList.remove("right-panel-active");
+    });
+
+    // Sign-in function
+    function signInUser(event) {
+        event.preventDefault();
+        const email = document.getElementById("signInEmail").value;
+        const password = document.getElementById("signInPassword").value;
+
+        signInWithEmailAndPassword(auth, email, password)
+            .then(() => {
+                console.log("Sign in successful");
+                window.location.href = "index.html";
+            })
+            .catch((error) => {
+                console.error("Sign-in error:", error);
+                alert(error.message);
+                window.location.href = "error.html"; 
             });
-            
-            signInButton.addEventListener('click', () => {
-                container.classList.remove("right-panel-active");
+    }
+
+    // Sign-up function
+    function signUpUser(event) {
+        event.preventDefault();
+        const email = document.getElementById("signUpEmail").value;
+        const password = document.getElementById("signUpPassword").value;
+
+        createUserWithEmailAndPassword(auth, email, password)
+            .then(() => {
+                console.log("Sign-up successful");
+                window.location.href = "index.html";
+            })
+            .catch((error) => {
+                console.error("Sign-up error:", error);
+                alert(error.message);
+                window.location.href = "error.html"; 
             });
-                </script>
+    }
+
+    // Event listeners for form submissions
+    document.getElementById("signInForm").addEventListener("submit", signInUser);
+    document.getElementById("signUpForm").addEventListener("submit", signUpUser);
+</script>
+
+
 </body>
 </html>

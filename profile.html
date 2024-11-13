@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet">
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+        import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyBmGsvpmqrrZptEkOE-GgO4JpFpa5AXKuA",
+          authDomain: "edtech-cfc61.firebaseapp.com",
+          projectId: "edtech-cfc61",
+          storageBucket: "edtech-cfc61.firebasestorage.app",
+          messagingSenderId: "413128910911",
+          appId: "1:413128910911:web:1ead13f37fa53241a2f08a"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let userLoggedIn = false;
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                userLoggedIn = true;
+                document.getElementById("userName").textContent = user.displayName || user.email;
+                fetchCourses(user.uid);
+            } else {
+                userLoggedIn = false;
+            }
+
+            if (!userLoggedIn) {
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 1000);
+            }
+        });
+
+        async function fetchCourses(userId) {
+            const coursesList = document.getElementById("coursesList");
+            coursesList.innerHTML = "";
+
+            const q = query(collection(db, "enrollments"), where("userId", "==", userId));
+            const querySnapshot = await getDocs(q);
+
+            if (querySnapshot.empty) {
+                coursesList.innerHTML = "<p class='text-gray-500'>No enrolled courses found.</p>";
+            } else {
+                querySnapshot.forEach((doc) => {
+                    const course = doc.data();
+                    const courseCard = document.createElement("div");
+                    courseCard.classList.add("p-4", "bg-blue-100", "rounded-lg", "shadow", "flex", "items-center", "justify-between");
+
+                    courseCard.innerHTML = `
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-700">${course.courseName}</h3>
+                            <p class="text-sm text-gray-500">${course.description}</p>
+                        </div>
+                        <span class="px-2 py-1 bg-green-200 text-green-700 text-xs font-semibold rounded-full">${course.status || "Enrolled"}</span>
+                    `;
+                    coursesList.appendChild(courseCard);
+                });
+            }
+        }
+
+        // Log out function
+        window.logOut = async function () {
+            try {
+                await signOut(auth);
+                window.location.href = "index.html";
+            } catch (error) {
+                console.error("Error logging out:", error);
+            }
+        }
+
+    </script>
+</head>
+<body class="bg-gray-100">
+
+    <div class="container mx-auto mt-8 p-6 bg-white shadow-lg rounded-lg">
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-2xl font-semibold text-gray-700">Welcome, <span id="userName">User</span></h1>
+            <button onclick="logOut()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700">Log Out</button>
+        </div>
+
+        <h2 class="text-xl font-semibold text-gray-600 mb-4">Enrolled Courses</h2>
+        <div id="coursesList" class="space-y-4">
+            <!-- Course cards will be appended here -->
+        </div>
+    </div>
+
+</body>
+</html>

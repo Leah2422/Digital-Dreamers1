@@ -6,7 +6,7 @@
     <meta name="google-translate-customization" content="9f841e7780177523-3214ceb76f765f38-gc38c6fe6f9d06436-c">
     </meta>
 
-    <title>Secret Coder : Online Courses</title>
+    <title> HTML Course</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
@@ -34,9 +34,11 @@
     <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
-   
-</head>
+  <!-- Include Firebase SDK using module script -->
 
+  
+</head>
+ 
 
 <body>
   
@@ -87,14 +89,10 @@
                     <h2 class="text-3xl font-bold text-gray-800">HTML Course for Beginners</h2>
                     <p class="text-gray-600">Start at the beginning by learning HTML basics — an important foundation for building and editing web pages.</p>
                     <div class="flex items-center space-x-6 text-gray-500">
-                        <small><i class="fa fa-star text-yellow-500"></i> 4.6</small>
-                        <small><i class="fa fa-user-graduate"></i> 5.8L+ Learners</small>
+                        <small><i class="fa fa-star text-yellow-500"></i> 4</small>
+                        <small><i class="fa fa-user-graduate"></i> 5+ Learners</small>
                         <small><i class="fa fa-user"></i> Beginner</small>
                         <small><i class="fa fa-clock"></i> 2.0 Hrs</small>
-                    </div>
-                    <div class="flex items-center mt-3">
-                        <img src="img/testimonial-2.jpg" alt="Instructor" class="h-10 w-10 rounded-full">
-                        <span class="ml-3 font-semibold text-gray-800">Instructor: Zoe Bachman</span>
                     </div>
                 </div>
 
@@ -165,9 +163,9 @@
             <!-- Sidebar -->
             <div class="lg:w-1/4 p-6 bg-white rounded-lg shadow-lg">
                 <img src="img/course-1.jpg" alt="Course Image" class="h-48 w-full object-cover rounded-md">
-                <h4 class="mt-4 text-xl font-semibold text-gray-800">Free</h4>
-                <h4 class="text-xl font-semibold text-gray-800">$<small class="line-through text-gray-500">20</small></h4>
-                <a href="#" class="block w-full text-center text-white bg-blue-600 rounded-md py-3 mt-6 font-semibold">ENROLL NOW</a>
+                <h4 class="mt-4 text-xl font-semibold text-gray-800">FREE</h4>
+              
+                <button id="enrollButton" onclick="enroll()" class="block w-full text-center text-white bg-blue-600 rounded-md py-3 mt-6 font-semibold">ENROLL NOW</button>
                 <div class="mt-8">
                     <div class="flex justify-between py-2 border-t text-gray-700">
                         <p><i class="fa fa-clock"></i> Duration</p>
@@ -303,6 +301,59 @@
 
 <!-- Template Javascript -->
 <script src="js/main.js"></script>
+<script type="module">
+    // Import required Firebase modules
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js';
+    import { getAuth } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
+    import { getFirestore, doc, setDoc, collection } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js';
+  
+    // Firebase configuration (replace with your actual Firebase config)
+    const firebaseConfig = {
+          apiKey: "AIzaSyBmGsvpmqrrZptEkOE-GgO4JpFpa5AXKuA",
+          authDomain: "edtech-cfc61.firebaseapp.com",
+          projectId: "edtech-cfc61",
+          storageBucket: "edtech-cfc61.firebasestorage.app",
+          messagingSenderId: "413128910911",
+          appId: "1:413128910911:web:1ead13f37fa53241a2f08a"
+        };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app); // Firebase authentication
+    const db = getFirestore(app); // Firestore
+  
+    // Enroll button click handler
+    window.enroll = async function() {
+        console.log("clicked");
+      const user = auth.currentUser; // Get the current user
+  
+      if (!user) {
+        // If no user is signed in, redirect to signup page
+        alert('You must sign in first');
+        window.location.href = 'signup.html'; // Redirect to signup page
+        return;
+      }
+  
+      // Example course info (replace with dynamic values)
+      const courseInfo = {
+        courseName: 'Html Beginners', // Replace with dynamic course name
+        courseId: '12345', // Replace with dynamic course ID
+        progress: 0, // Initial progress value
+        userEmail: user.email // Store the user's email
+      };
+  
+      try {
+        // Save course info to Firestore under 'enrolledCourses' collection
+        await setDoc(doc(collection(db, 'enrolledCourses'), `${user.uid}_${courseInfo.courseId}`), courseInfo);
+  
+        // Alert user of successful enrollment
+        alert('You have successfully enrolled in the course!');
+      } catch (error) {
+        console.error('Error enrolling in course: ', error);
+        alert('There was an error enrolling in the course. Please try again.');
+      }
+    }
+  </script>
 </body>
 
 </html>
